@@ -56,8 +56,11 @@ function frameObject(object, camera, controls, padding = 1.5) {
   controls.update();
 }
 
-function translateGeometry(geometry, currentOffset, offset) {
+function accumulateTranslationGeometry(geometry, currentOffset, offset) {
+  // Translate the geometry
   geometry.translate(0, currentOffset, 0);
+
+  // Accumulate translation offset
   return currentOffset + offset;
 }
 
@@ -98,29 +101,29 @@ console.log('rebuilding with params:', { ...params });
   var offset = 0;
 
   // Tip
-  const geometry = new THREE.SphereGeometry(params.ballDiameter/2);
-  offset = translateGeometry( geometry, offset, params.ballDiameter/2);
-  const material = new THREE.MeshStandardMaterial({ color: params.ballColor, metalness: 0.6, roughness: 0.3, transparent:true, opacity: 0.8 });
-  const tip = new THREE.Mesh(geometry, material);
+  const tipGeometry = new THREE.SphereGeometry(params.ballDiameter/2);
+  offset = accumulateTranslationGeometry( tipGeometry, offset, params.ballDiameter/2);
+  const tipMaterial = new THREE.MeshStandardMaterial({ color: params.ballColor, metalness: 0.6, roughness: 0.3, transparent:true, opacity: 0.8 });
+  const tip = new THREE.Mesh(tipGeometry, tipMaterial);
   assembly.add(tip);
 
   // Shaft
-  const geometry2 = new THREE.CylinderGeometry(params.shaftDiameter/2, params.shaftDiameter/2, params.shaftLength);
-  offset = translateGeometry(geometry2, offset + params.shaftLength/2 - params.ballDiameter/2, params.shaftLength/2);
-  const material2 = new THREE.MeshStandardMaterial({ color: params.shaftColor, metalness: 0.8, roughness: 0.3 });
-  const shaft = new THREE.Mesh(geometry2, material2);
+  const shaftGeometry = new THREE.CylinderGeometry(params.shaftDiameter/2, params.shaftDiameter/2, params.shaftLength);
+  offset = accumulateTranslationGeometry(shaftGeometry, offset + params.shaftLength/2 - params.ballDiameter/2, params.shaftLength/2);
+  const shaftMaterial = new THREE.MeshStandardMaterial({ color: params.shaftColor, metalness: 0.8, roughness: 0.3 });
+  const shaft = new THREE.Mesh(shaftGeometry, shaftMaterial);
   assembly.add(shaft);
 
   // Fixture
-  const geometry3 = new THREE.CylinderGeometry(params.fixtureDiameter/2, params.shaftDiameter/2, params.fixtureLength/2);
-  offset = translateGeometry(geometry3, offset + params.fixtureLength/4, params.fixtureLength/2);
-  const fixture = new THREE.Mesh(geometry3, material2);
+  const fixtureGeometry = new THREE.CylinderGeometry(params.fixtureDiameter/2, params.shaftDiameter/2, params.fixtureLength/2);
+  offset = accumulateTranslationGeometry(fixtureGeometry, offset + params.fixtureLength/4, params.fixtureLength/2);
+  const fixture = new THREE.Mesh(fixtureGeometry, shaftMaterial);
   assembly.add(fixture);
 
   // Fixture top
-  const geometry4 = new THREE.CylinderGeometry(params.fixtureDiameter/2, params.fixtureDiameter/2, params.fixtureLength/2);
-  offset = translateGeometry(geometry4, offset, params.fixtureLength/2);
-  const fixtureTop = new THREE.Mesh(geometry4, material2);
+  const topGeometry = new THREE.CylinderGeometry(params.fixtureDiameter/2, params.fixtureDiameter/2, params.fixtureLength/2);
+  offset = accumulateTranslationGeometry(topGeometry, offset, params.fixtureLength/2);
+  const fixtureTop = new THREE.Mesh(topGeometry, shaftMaterial);
   assembly.add(fixtureTop);
 
   scene.add(assembly);
