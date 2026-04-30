@@ -4,6 +4,9 @@ import { loadOBJ } from './loaders/objLoader.js';
 import GUI from 'lil-gui';
 import './style.css';
 import { createDimensionsMenu } from './menus/dimensionsMenu.js';
+import { getBallMaterials, getMaterial } from './textures/ballMaterials.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { HDRLoader } from 'three/addons/loaders/HDRLoader.js';
 
 // Scene
 const scene = new THREE.Scene();
@@ -32,6 +35,23 @@ const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 directionalLight.position.set(5, 10, 7.5);
 scene.add(directionalLight);
 
+const pmremGenerator = new THREE.PMREMGenerator(renderer);
+scene.environment = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environmentIntensity = 1;   // half-strength
+
+new HDRLoader().load(
+  '/hdri/monochrome_studio_02_4k.hdr',
+  (texture) => {
+    texture.mapping = THREE.EquirectangularReflectionMapping;
+    scene.environment = texture;
+  },
+  undefined,
+  (error) => {
+    console.error('HDRI failed to load:', error);
+  }
+);
+
+// Function to adjust camera to object
 function frameObject(object, camera, controls, padding = 1.5) {
   const box = new THREE.Box3().setFromObject(object);
   const size = box.getSize(new THREE.Vector3()).length();
@@ -57,13 +77,12 @@ function frameObject(object, camera, controls, padding = 1.5) {
 }
 
 // ─── Parameters (the source of truth) ───────────────────────────
+
 const params = {
   shaftDiameter: 0.2,
   shaftLength: 1,
   ballDiameter: 0.3,
-  ballMaterial: 'ruby',
-  shaftColor: '#ffffff',
-  ballColor: '#ff0044',
+  ballMaterial: 'Ruby'
 };
 
 // Assembly + rebuild logic
@@ -89,21 +108,19 @@ console.log('rebuilding with params:', { ...params });
   }
 
   const geometry = new THREE.SphereGeometry(params.ballDiameter/2);
-  const material = new THREE.MeshStandardMaterial({ color: params.ballColor, metalness: 0.6, roughness: 0.3, transparent:true, opacity: 0.8 });
-  const tip = new THREE.Mesh(geometry, material);
+  const tip = new THREE.Mesh(geometry, getMaterial(params.ballMaterial));
   assembly.add(tip);
   const geometry2 = new THREE.CylinderGeometry(params.shaftDiameter/2, params.shaftDiameter/2, params.shaftLength);
-  const material2 = new THREE.MeshStandardMaterial({ color: params.shaftColor, metalness: 0.8, roughness: 0.3 });
   geometry2.translate(0, 0.6, 0)
-  const shank = new THREE.Mesh(geometry2, material2);
+  const shank = new THREE.Mesh(geometry2, getMaterial('Steel'));
   assembly.add(shank);
   const geometry3 = new THREE.CylinderGeometry(0.13, params.shaftDiameter/2, 0.25);
   geometry3.translate(0, 1.2, 0)
-  const fixture = new THREE.Mesh(geometry3, material2);
+  const fixture = new THREE.Mesh(geometry3, getMaterial('Steel'));
   assembly.add(fixture);
   const geometry4 = new THREE.CylinderGeometry(0.13, 0.13, 0.25);
   geometry4.translate(0, 1.425, 0)
-  const fixtureTop = new THREE.Mesh(geometry4, material2);
+  const fixtureTop = new THREE.Mesh(geometry4, getMaterial('Steel'));
   assembly.add(fixtureTop);
 
   scene.add(assembly);

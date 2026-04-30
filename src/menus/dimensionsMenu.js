@@ -1,5 +1,7 @@
 import GUI from 'lil-gui';
+import { getBallMaterials } from '../textures/ballMaterials.js';
 
+// Constants
 const step = 0.05;
 const minDiameter = step;
 const maxDiameter = 10.0;
@@ -19,12 +21,10 @@ export function createDimensionsMenu(params, onChange) {
   const shaftFolder = gui.addFolder('Shaft');
   shaftFolder.add(params, 'shaftDiameter', minDiameter, maxDiameter, step).onChange(onChange);
   shaftFolder.add(params, 'shaftLength', minLenght, maxLenght, step).onChange(onChange);
-  shaftFolder.addColor(params, 'shaftColor').onChange(onChange);
 
   const ballFolder = gui.addFolder('Ball');
-  ballFolder.add(params, 'ballMaterial', ['ruby', 'ceramic']).onChange(onChange);
+  ballFolder.add(params, 'ballMaterial', Object.keys(getBallMaterials())).onChange(onChange);
   ballFolder.add(params, 'ballDiameter', minDiameter, maxDiameter, step).onChange(onChange);
-  ballFolder.addColor(params, 'ballColor').onChange(onChange);
 
   return gui;
 }
