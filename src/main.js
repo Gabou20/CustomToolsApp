@@ -13,9 +13,13 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x1a1a1a);
 
 // Camera
-const camera = new THREE.PerspectiveCamera(
-  75,
-  window.innerWidth / window.innerHeight,
+const aspect = window.innerWidth / window.innerHeight;
+const zoom = 15;
+const camera = new THREE.OrthographicCamera(
+  -aspect * zoom,
+  aspect * zoom,
+  zoom,
+  -zoom,
   0.1,
   1000
 );
