@@ -143,8 +143,6 @@ console.log('rebuilding with params:', { ...params });
   const fixture = new THREE.Mesh(geometry3, getShaftMaterial("Steel"));
   assembly.add(fixture);
 
-  scene.add(assembly);
-
   // Fixture top
   const geometry4 = new THREE.CylinderGeometry(params.fixtureDiameter/2, params.fixtureDiameter/2, params.fixtureLength/2);
   offset = accumulateTranslationGeometry(geometry4, offset, params.fixtureLength/2);
@@ -156,7 +154,9 @@ console.log('rebuilding with params:', { ...params });
   const hole = new THREE.Mesh(holeGeometry, new THREE.MeshStandardMaterial());
 
   const result = CSG.subtract(fixtureTop, hole);
-  scene.add(result);
+  assembly.add(result);
+
+  scene.add(assembly);
 }
 
 // GUI — pass it the params and tell it what to do on change
