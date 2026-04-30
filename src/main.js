@@ -32,11 +32,35 @@ const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 directionalLight.position.set(5, 10, 7.5);
 scene.add(directionalLight);
 
+function frameObject(object, camera, controls, padding = 1.5) {
+  const box = new THREE.Box3().setFromObject(object);
+  const size = box.getSize(new THREE.Vector3()).length();
+  const center = box.getCenter(new THREE.Vector3());
+
+  // Aim controls at the model's center
+  controls.target.copy(center);
+
+  // Position camera at a diagonal, scaled by model size
+  const distance = size * padding;
+  camera.position.set(
+    center.x + distance,
+    center.y + distance,
+    center.z + distance
+  );
+
+  // Adjust near/far to comfortably contain the model
+  camera.near = size / 100;
+  camera.far = size * 100;
+  camera.updateProjectionMatrix();
+
+  controls.update();
+}
+
 // ─── Parameters (the source of truth) ───────────────────────────
 const params = {
   shaftDiameter: 0.2,
   shaftLength: 1,
-  ballDiameter: 0.2,
+  ballDiameter: 0.3,
   ballMaterial: 'ruby',
   shaftColor: '#ffffff',
   ballColor: '#ff0044',
@@ -85,14 +109,15 @@ console.log('rebuilding with params:', { ...params });
   scene.add(assembly);
 }
 
-rebuildAssembly();
-
 // GUI — pass it the params and tell it what to do on change
 createDimensionsMenu(params, rebuildAssembly);
 
 // Orbit controls — drag to rotate, scroll to zoom, right-click to pano
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
+
+rebuildAssembly();
+frameObject(assembly, camera, controls);
 
 // Handle window resize
 window.addEventListener('resize', () => {
