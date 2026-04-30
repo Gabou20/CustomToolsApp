@@ -4,6 +4,9 @@ import { loadOBJ } from './loaders/objLoader.js';
 import GUI from 'lil-gui';
 import './style.css';
 import { createDimensionsMenu } from './menus/dimensionsMenu.js';
+import { getBallMaterials, getMaterial } from './textures/ballMaterials.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { HDRLoader } from 'three/addons/loaders/HDRLoader.js';
 
 // Scene
 const scene = new THREE.Scene();
@@ -32,6 +35,23 @@ const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 directionalLight.position.set(5, 10, 7.5);
 scene.add(directionalLight);
 
+const pmremGenerator = new THREE.PMREMGenerator(renderer);
+scene.environment = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environmentIntensity = 1;   // half-strength
+
+new HDRLoader().load(
+  '/hdri/monochrome_studio_02_4k.hdr',
+  (texture) => {
+    texture.mapping = THREE.EquirectangularReflectionMapping;
+    scene.environment = texture;
+  },
+  undefined,
+  (error) => {
+    console.error('HDRI failed to load:', error);
+  }
+);
+
+// Function to adjust camera to object
 function frameObject(object, camera, controls, padding = 1.5) {
   const box = new THREE.Box3().setFromObject(object);
   const size = box.getSize(new THREE.Vector3()).length();
@@ -65,15 +85,14 @@ function accumulateTranslationGeometry(geometry, currentOffset, offset) {
 }
 
 // ─── Parameters (the source of truth) ───────────────────────────
+
 const params = {
   fixtureDiameter: 3,
   fixtureLength: 5,
   shaftDiameter: 2,
   shaftLength: 16,
   ballDiameter: 3,
-  ballMaterial: 'ruby',
-  shaftColor: '#ffffff',
-  ballColor: '#ff0044',
+  ballMaterial: 'Ruby',
 };
 
 // Assembly + rebuild logic
@@ -101,29 +120,27 @@ console.log('rebuilding with params:', { ...params });
   var offset = 0;
 
   // Tip
-  const tipGeometry = new THREE.SphereGeometry(params.ballDiameter/2);
-  offset = accumulateTranslationGeometry( tipGeometry, offset, params.ballDiameter/2);
-  const tipMaterial = new THREE.MeshStandardMaterial({ color: params.ballColor, metalness: 0.6, roughness: 0.3, transparent:true, opacity: 0.8 });
-  const tip = new THREE.Mesh(tipGeometry, tipMaterial);
+  const geometry = new THREE.SphereGeometry(params.ballDiameter/2);
+  offset = translateGeometry( geometry, offset, params.ballDiameter/2);
+  const tip = new THREE.Mesh(geometry, getMaterial(params.ballMaterial));
   assembly.add(tip);
 
   // Shaft
-  const shaftGeometry = new THREE.CylinderGeometry(params.shaftDiameter/2, params.shaftDiameter/2, params.shaftLength);
-  offset = accumulateTranslationGeometry(shaftGeometry, offset + params.shaftLength/2 - params.ballDiameter/2, params.shaftLength/2);
-  const shaftMaterial = new THREE.MeshStandardMaterial({ color: params.shaftColor, metalness: 0.8, roughness: 0.3 });
-  const shaft = new THREE.Mesh(shaftGeometry, shaftMaterial);
+  const geometry2 = new THREE.CylinderGeometry(params.shaftDiameter/2, params.shaftDiameter/2, params.shaftLength);
+  offset = translateGeometry(geometry2, offset + params.shaftLength/2 - params.ballDiameter/2, params.shaftLength/2);
+  const shaft = new THREE.Mesh(geometry2, getMaterial("Steel"));
   assembly.add(shaft);
 
   // Fixture
-  const fixtureGeometry = new THREE.CylinderGeometry(params.fixtureDiameter/2, params.shaftDiameter/2, params.fixtureLength/2);
-  offset = accumulateTranslationGeometry(fixtureGeometry, offset + params.fixtureLength/4, params.fixtureLength/2);
-  const fixture = new THREE.Mesh(fixtureGeometry, shaftMaterial);
+  const geometry3 = new THREE.CylinderGeometry(params.fixtureDiameter/2, params.shaftDiameter/2, params.fixtureLength/2);
+  offset = translateGeometry(geometry3, offset + params.fixtureLength/4, params.fixtureLength/2);
+  const fixture = new THREE.Mesh(geometry3, getMaterial("Steel"));
   assembly.add(fixture);
 
   // Fixture top
-  const topGeometry = new THREE.CylinderGeometry(params.fixtureDiameter/2, params.fixtureDiameter/2, params.fixtureLength/2);
-  offset = accumulateTranslationGeometry(topGeometry, offset, params.fixtureLength/2);
-  const fixtureTop = new THREE.Mesh(topGeometry, shaftMaterial);
+  const geometry4 = new THREE.CylinderGeometry(params.fixtureDiameter/2, params.fixtureDiameter/2, params.fixtureLength/2);
+  offset = translateGeometry(geometry4, offset, params.fixtureLength/2);
+  const fixtureTop = new THREE.Mesh(geometry4, getMaterial("Steel"));
   assembly.add(fixtureTop);
 
   scene.add(assembly);
