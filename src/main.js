@@ -7,15 +7,20 @@ import { createDimensionsMenu } from './menus/dimensionsMenu.js';
 import { ballMaterials, shaftMaterials, getBallMaterial, getShaftMaterial } from './textures/materials.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { HDRLoader } from 'three/addons/loaders/HDRLoader.js';
+import { CSG } from 'three-csg-ts';
 
 // Scene
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x1a1a1a);
 
 // Camera
-const camera = new THREE.PerspectiveCamera(
-  75,
-  window.innerWidth / window.innerHeight,
+const aspect = window.innerWidth / window.innerHeight;
+const zoom = 15;
+const camera = new THREE.OrthographicCamera(
+  -aspect * zoom,
+  aspect * zoom,
+  zoom,
+  -zoom,
   0.1,
   1000
 );
@@ -142,7 +147,14 @@ console.log('rebuilding with params:', { ...params });
   const geometry4 = new THREE.CylinderGeometry(params.fixtureDiameter/2, params.fixtureDiameter/2, params.fixtureLength/2);
   offset = accumulateTranslationGeometry(geometry4, offset, params.fixtureLength/2);
   const fixtureTop = new THREE.Mesh(geometry4, getShaftMaterial("Steel"));
-  assembly.add(fixtureTop);
+  
+  const holeGeometry = new THREE.CylinderGeometry(0.5, 0.5, 10);
+  holeGeometry.rotateX(Math.PI / 2);
+  accumulateTranslationGeometry(holeGeometry, offset - 2.5, 0);
+  const hole = new THREE.Mesh(holeGeometry, new THREE.MeshStandardMaterial());
+
+  const result = CSG.subtract(fixtureTop, hole);
+  assembly.add(result);
 
   scene.add(assembly);
 }
