@@ -4,7 +4,7 @@ import { loadOBJ } from './loaders/objLoader.js';
 import GUI from 'lil-gui';
 import './style.css';
 import { createDimensionsMenu } from './menus/dimensionsMenu.js';
-import { getBallMaterials, getMaterial } from './textures/ballMaterials.js';
+import { ballMaterials, shaftMaterials, getBallMaterial, getShaftMaterial } from './textures/materials.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { HDRLoader } from 'three/addons/loaders/HDRLoader.js';
 
@@ -86,10 +86,11 @@ function translateGeometry(geometry, currentOffset, offset) {
 const params = {
   fixtureDiameter: 3,
   fixtureLength: 5,
+  shaftMaterial: 'Steel',
   shaftDiameter: 2,
   shaftLength: 16,
-  ballDiameter: 3,
   ballMaterial: 'Ruby',
+  ballDiameter: 3,
 };
 
 // Assembly + rebuild logic
@@ -119,25 +120,25 @@ console.log('rebuilding with params:', { ...params });
   // Tip
   const geometry = new THREE.SphereGeometry(params.ballDiameter/2);
   offset = translateGeometry( geometry, offset, params.ballDiameter/2);
-  const tip = new THREE.Mesh(geometry, getMaterial(params.ballMaterial));
+  const tip = new THREE.Mesh(geometry, getBallMaterial(params.ballMaterial));
   assembly.add(tip);
 
   // Shaft
   const geometry2 = new THREE.CylinderGeometry(params.shaftDiameter/2, params.shaftDiameter/2, params.shaftLength);
   offset = translateGeometry(geometry2, offset + params.shaftLength/2 - params.ballDiameter/2, params.shaftLength/2);
-  const shaft = new THREE.Mesh(geometry2, getMaterial("Steel"));
+  const shaft = new THREE.Mesh(geometry2, getShaftMaterial(params.shaftMaterial));
   assembly.add(shaft);
 
   // Fixture
   const geometry3 = new THREE.CylinderGeometry(params.fixtureDiameter/2, params.shaftDiameter/2, params.fixtureLength/2);
   offset = translateGeometry(geometry3, offset + params.fixtureLength/4, params.fixtureLength/2);
-  const fixture = new THREE.Mesh(geometry3, getMaterial("Steel"));
+  const fixture = new THREE.Mesh(geometry3, getShaftMaterial("Steel"));
   assembly.add(fixture);
 
   // Fixture top
   const geometry4 = new THREE.CylinderGeometry(params.fixtureDiameter/2, params.fixtureDiameter/2, params.fixtureLength/2);
   offset = translateGeometry(geometry4, offset, params.fixtureLength/2);
-  const fixtureTop = new THREE.Mesh(geometry4, getMaterial("Steel"));
+  const fixtureTop = new THREE.Mesh(geometry4, getShaftMaterial("Steel"));
   assembly.add(fixtureTop);
 
   scene.add(assembly);
@@ -150,8 +151,12 @@ createDimensionsMenu(params, rebuildAssembly);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 
+// Allow full vertical orbit
+controls.minPolarAngle = -Infinity;
+controls.maxPolarAngle = Infinity;
+
 rebuildAssembly();
-frameObject(assembly, camera, controls);
+frameObject(assembly, camera, controls, 0.8);
 
 // Handle window resize
 window.addEventListener('resize', () => {

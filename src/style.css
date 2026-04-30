@@ -13,3 +13,62 @@ html, body, #app {
 canvas {
   display: block;
 }
+
+.lil-gui {
+  --font-size: 14px;          /* was 11px */
+  --input-font-size: 14px;    /* was 11px */
+  --padding: 8px;             /* was 4px */
+  --spacing: 6px;             /* was 4px */
+  --folder-indent: 14px;      /* was 7px */
+}
+
+.lil-gui .lil-slider {
+  height: 6px;
+  background: #333;
+  border-radius: 3px;
+  overflow: visible;
+  cursor: pointer;
+  position: relative;
+}
+
+.lil-gui .lil-slider .lil-fill {
+  height: 100%;
+  border-radius: 3px;
+  position: relative;
+  overflow: visible;
+}
+
+/* Round knob at the right edge of the fill */
+.lil-gui .lil-slider .lil-fill::after {
+  content: '';
+  position: absolute;
+  right: -9px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #4a90e2;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+}
+
+.lil-gui .lil-controller.lil-number input {
+  color: #ffffff;
+}
+
+.lil-gui .lil-slider:hover .lil-fill::after {
+  background: #f0f0f0;
+}
+
+.lil-gui .lil-slider,
+.lil-gui .lil-slider .lil-fill,
+.lil-gui .lil-widget,
+.lil-gui .lil-controller {
+  overflow: visible !important;
+}
+
+.lil-gui .lil-slider:active {
+  cursor: grabbing;
+}
