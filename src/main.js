@@ -119,27 +119,25 @@ console.log('rebuilding with params:', { ...params });
   // Tip
   const geometry = new THREE.SphereGeometry(params.ballDiameter/2);
   offset = translateGeometry( geometry, offset, params.ballDiameter/2);
-  const material = new THREE.MeshStandardMaterial({ color: params.ballColor, metalness: 0.6, roughness: 0.3, transparent:true, opacity: 0.8 });
-  const tip = new THREE.Mesh(geometry, material);
+  const tip = new THREE.Mesh(geometry, getMaterial(params.ballMaterial));
   assembly.add(tip);
 
   // Shaft
   const geometry2 = new THREE.CylinderGeometry(params.shaftDiameter/2, params.shaftDiameter/2, params.shaftLength);
   offset = translateGeometry(geometry2, offset + params.shaftLength/2 - params.ballDiameter/2, params.shaftLength/2);
-  const material2 = new THREE.MeshStandardMaterial({ color: params.shaftColor, metalness: 0.8, roughness: 0.3 });
-  const shaft = new THREE.Mesh(geometry2, material2);
+  const shaft = new THREE.Mesh(geometry2, getMaterial("Steel"));
   assembly.add(shaft);
 
   // Fixture
   const geometry3 = new THREE.CylinderGeometry(params.fixtureDiameter/2, params.shaftDiameter/2, params.fixtureLength/2);
   offset = translateGeometry(geometry3, offset + params.fixtureLength/4, params.fixtureLength/2);
-  const fixture = new THREE.Mesh(geometry3, material2);
+  const fixture = new THREE.Mesh(geometry3, getMaterial("Steel"));
   assembly.add(fixture);
 
   // Fixture top
   const geometry4 = new THREE.CylinderGeometry(params.fixtureDiameter/2, params.fixtureDiameter/2, params.fixtureLength/2);
   offset = translateGeometry(geometry4, offset, params.fixtureLength/2);
-  const fixtureTop = new THREE.Mesh(geometry4, material2);
+  const fixtureTop = new THREE.Mesh(geometry4, getMaterial("Steel"));
   assembly.add(fixtureTop);
 
   scene.add(assembly);
