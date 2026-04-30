@@ -7,6 +7,7 @@ import { createDimensionsMenu } from './menus/dimensionsMenu.js';
 import { ballMaterials, shaftMaterials, getBallMaterial, getShaftMaterial } from './textures/materials.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { HDRLoader } from 'three/addons/loaders/HDRLoader.js';
+import { CSG } from 'three-csg-ts';
 
 // Scene
 const scene = new THREE.Scene();
@@ -142,13 +143,20 @@ console.log('rebuilding with params:', { ...params });
   const fixture = new THREE.Mesh(geometry3, getShaftMaterial("Steel"));
   assembly.add(fixture);
 
+  scene.add(assembly);
+
   // Fixture top
   const geometry4 = new THREE.CylinderGeometry(params.fixtureDiameter/2, params.fixtureDiameter/2, params.fixtureLength/2);
   offset = accumulateTranslationGeometry(geometry4, offset, params.fixtureLength/2);
   const fixtureTop = new THREE.Mesh(geometry4, getShaftMaterial("Steel"));
-  assembly.add(fixtureTop);
+  
+  const holeGeometry = new THREE.CylinderGeometry(0.5, 0.5, 10);
+  holeGeometry.rotateX(Math.PI / 2);
+  accumulateTranslationGeometry(holeGeometry, offset - 2.5, 0);
+  const hole = new THREE.Mesh(holeGeometry, new THREE.MeshStandardMaterial());
 
-  scene.add(assembly);
+  const result = CSG.subtract(fixtureTop, hole);
+  scene.add(result);
 }
 
 // GUI — pass it the params and tell it what to do on change
