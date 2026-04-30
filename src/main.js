@@ -37,7 +37,7 @@ scene.add(directionalLight);
 
 const pmremGenerator = new THREE.PMREMGenerator(renderer);
 scene.environment = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
-scene.environmentIntensity = 1;   // half-strength
+scene.environmentIntensity = 1.0;
 
 new HDRLoader().load(
   '/hdri/monochrome_studio_02_4k.hdr',
