@@ -33,54 +33,31 @@ directionalLight.position.set(5, 10, 7.5);
 scene.add(directionalLight);
 
 // A test cube so we know things are working
-// ─── Parameters (the source of truth) ───────────────────────────
-const params = {
-  shaftDiameter: 2.0,
-  shaftLength: 3.0,
-  ballDiameter: 2.0,
-  ballMaterial: 'ruby',
-  shaftColor: '#888888',
-  ballColor: '#aa5533',
-};
-
-// Assembly + rebuild logic
-let assembly = new THREE.Group();
-scene.add(assembly);
-
-function rebuildAssembly() {
-console.log('rebuilding with params:', { ...params });
-
-  // Dispose old geometry/materials to avoid memory leaks
-    while (assembly.children.length > 0) {
-    const child = assembly.children[0];
-    assembly.remove(child);
-    if (child.isMesh) {
-      child.geometry.dispose();
-      // Material can be a single material or an array
-      if (Array.isArray(child.material)) {
-        child.material.forEach((m) => m.dispose());
-      } else {
-        child.material.dispose();
-      }
-    }
-  }
-
-  const geometry = new THREE.BoxGeometry(params.ballDiameter, params.ballDiameter, params.ballDiameter);
-  const material = new THREE.MeshStandardMaterial({ color: params.ballColor });
-  const cube = new THREE.Mesh(geometry, material);
-
-  assembly.add(cube);
-  scene.add(assembly);
-}
-
-rebuildAssembly();
-
-// GUI — pass it the params and tell it what to do on change
-createDimensionsMenu(params, rebuildAssembly);
+//const geometry = new THREE.BoxGeometry(1, 1, 1);
+//const material = new THREE.MeshStandardMaterial({ color: 0x00aaff });
+//const cube = new THREE.Mesh(geometry, material);
+//scene.add(cube);
+const geometry = new THREE.SphereGeometry(0.2);
+const material = new THREE.MeshStandardMaterial({ color: 0xff0044, metalness: 0.6, roughness: 0.3, transparent:true, opacity: 0.8 });
+const tip = new THREE.Mesh(geometry, material);
+scene.add(tip);
+const geometry2 = new THREE.CylinderGeometry(0.1, 0.1, 1);
+const material2 = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.8, roughness: 0.3 });
+geometry2.translate(0, 0.6, 0)
+const shank = new THREE.Mesh(geometry2, material2);
+scene.add(shank);
+const geometry3 = new THREE.CylinderGeometry(0.13, 0.1, 0.25);
+geometry3.translate(0, 1.2, 0)
+const fixture = new THREE.Mesh(geometry3, material2);
+scene.add(fixture);
+const geometry4 = new THREE.CylinderGeometry(0.13, 0.13, 0.25);
+geometry4.translate(0, 1.425, 0)
+const fixtureTop = new THREE.Mesh(geometry4, material2);
+scene.add(fixtureTop);
 
 // Grid helper to give a sense of space
-const grid = new THREE.GridHelper(10, 10, 0x444444, 0x222222);
-scene.add(grid);
+//const grid = new THREE.GridHelper(10, 10, 0x444444, 0x222222);
+//scene.add(grid);
 
 // Orbit controls — drag to rotate, scroll to zoom, right-click to pano
 const controls = new OrbitControls(camera, renderer.domElement);
