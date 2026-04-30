@@ -76,8 +76,11 @@ function frameObject(object, camera, controls, padding = 1.5) {
   controls.update();
 }
 
-function translateGeometry(geometry, currentOffset, offset) {
+function accumulateTranslationGeometry(geometry, currentOffset, offset) {
+  // Translate the geometry
   geometry.translate(0, currentOffset, 0);
+
+  // Accumulate translation offset
   return currentOffset + offset;
 }
 
@@ -119,25 +122,25 @@ console.log('rebuilding with params:', { ...params });
 
   // Tip
   const geometry = new THREE.SphereGeometry(params.ballDiameter/2);
-  offset = translateGeometry( geometry, offset, params.ballDiameter/2);
+  offset = accumulateTranslationGeometry( geometry, offset, params.ballDiameter/2);
   const tip = new THREE.Mesh(geometry, getBallMaterial(params.ballMaterial));
   assembly.add(tip);
 
   // Shaft
   const geometry2 = new THREE.CylinderGeometry(params.shaftDiameter/2, params.shaftDiameter/2, params.shaftLength);
-  offset = translateGeometry(geometry2, offset + params.shaftLength/2 - params.ballDiameter/2, params.shaftLength/2);
+  offset = accumulateTranslationGeometry(geometry2, offset + params.shaftLength/2 - params.ballDiameter/2, params.shaftLength/2);
   const shaft = new THREE.Mesh(geometry2, getShaftMaterial(params.shaftMaterial));
   assembly.add(shaft);
 
   // Fixture
   const geometry3 = new THREE.CylinderGeometry(params.fixtureDiameter/2, params.shaftDiameter/2, params.fixtureLength/2);
-  offset = translateGeometry(geometry3, offset + params.fixtureLength/4, params.fixtureLength/2);
+  offset = accumulateTranslationGeometry(geometry3, offset + params.fixtureLength/4, params.fixtureLength/2);
   const fixture = new THREE.Mesh(geometry3, getShaftMaterial("Steel"));
   assembly.add(fixture);
 
   // Fixture top
   const geometry4 = new THREE.CylinderGeometry(params.fixtureDiameter/2, params.fixtureDiameter/2, params.fixtureLength/2);
-  offset = translateGeometry(geometry4, offset, params.fixtureLength/2);
+  offset = accumulateTranslationGeometry(geometry4, offset, params.fixtureLength/2);
   const fixtureTop = new THREE.Mesh(geometry4, getShaftMaterial("Steel"));
   assembly.add(fixtureTop);
 
