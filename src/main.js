@@ -56,11 +56,18 @@ function frameObject(object, camera, controls, padding = 1.5) {
   controls.update();
 }
 
+function translateGeometry(geometry, currentOffset, offset) {
+  geometry.translate(0, currentOffset, 0);
+  return currentOffset + offset;
+}
+
 // ─── Parameters (the source of truth) ───────────────────────────
 const params = {
-  shaftDiameter: 0.2,
-  shaftLength: 1,
-  ballDiameter: 0.3,
+  fixtureDiameter: 3,
+  fixtureLength: 5,
+  shaftDiameter: 2,
+  shaftLength: 16,
+  ballDiameter: 3,
   ballMaterial: 'ruby',
   shaftColor: '#ffffff',
   ballColor: '#ff0044',
@@ -88,21 +95,31 @@ console.log('rebuilding with params:', { ...params });
     }
   }
 
+  var offset = 0;
+
+  // Tip
   const geometry = new THREE.SphereGeometry(params.ballDiameter/2);
+  offset = translateGeometry( geometry, offset, params.ballDiameter/2);
   const material = new THREE.MeshStandardMaterial({ color: params.ballColor, metalness: 0.6, roughness: 0.3, transparent:true, opacity: 0.8 });
   const tip = new THREE.Mesh(geometry, material);
   assembly.add(tip);
+
+  // Shaft
   const geometry2 = new THREE.CylinderGeometry(params.shaftDiameter/2, params.shaftDiameter/2, params.shaftLength);
+  offset = translateGeometry(geometry2, offset + params.shaftLength/2 - params.ballDiameter/2, params.shaftLength/2);
   const material2 = new THREE.MeshStandardMaterial({ color: params.shaftColor, metalness: 0.8, roughness: 0.3 });
-  geometry2.translate(0, 0.6, 0)
-  const shank = new THREE.Mesh(geometry2, material2);
-  assembly.add(shank);
-  const geometry3 = new THREE.CylinderGeometry(0.13, params.shaftDiameter/2, 0.25);
-  geometry3.translate(0, 1.2, 0)
+  const shaft = new THREE.Mesh(geometry2, material2);
+  assembly.add(shaft);
+
+  // Fixture
+  const geometry3 = new THREE.CylinderGeometry(params.fixtureDiameter/2, params.shaftDiameter/2, params.fixtureLength/2);
+  offset = translateGeometry(geometry3, offset + params.fixtureLength/4, params.fixtureLength/2);
   const fixture = new THREE.Mesh(geometry3, material2);
   assembly.add(fixture);
-  const geometry4 = new THREE.CylinderGeometry(0.13, 0.13, 0.25);
-  geometry4.translate(0, 1.425, 0)
+
+  // Fixture top
+  const geometry4 = new THREE.CylinderGeometry(params.fixtureDiameter/2, params.fixtureDiameter/2, params.fixtureLength/2);
+  offset = translateGeometry(geometry4, offset, params.fixtureLength/2);
   const fixtureTop = new THREE.Mesh(geometry4, material2);
   assembly.add(fixtureTop);
 
