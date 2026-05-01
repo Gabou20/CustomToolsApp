@@ -311,6 +311,7 @@ camera2D.layers.enable(DIMENSION_LAYER);
 
 renderer.autoClear = false;   // set this ONCE, outside animate (e.g. right after creating the renderer)
 
+
 function animate() {
   requestAnimationFrame(animate);
   controls.update();
