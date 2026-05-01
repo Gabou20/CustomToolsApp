@@ -16,7 +16,9 @@ const DIMENSION_LAYER = 1;
 
 // Scene
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x1a1a1a);
+//scene.background = new THREE.Color(0x1a1a1a);
+scene.background = null;
+//scene.fog = new THREE.Fog('#ffff', 20, 100);
 
 // camera3D
 const aspect = window.innerWidth / window.innerHeight;
@@ -33,9 +35,10 @@ camera3D.layers.set(0);
 camera3D.position.set(3, 3, 3);
 
 // Renderer
-const renderer = new THREE.WebGLRenderer({ antialias: true });
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setClearColor(0x000000, 0);
 document.querySelector('#app').appendChild(renderer.domElement);
 
 // Lights
@@ -330,7 +333,7 @@ function animate() {
   renderer.setScissor(insetX, insetY, insetWidth, insetHeight);
   renderer.setScissorTest(true);
 
-  renderer.setClearColor(0x1a1a1a, 1);   // dark gray
+  renderer.setClearColor(0x1a1a1a, 0);   // dark gray
   renderer.clear();                      // clears scissor region only (color + depth)
 
   const aspect2D = insetWidth / insetHeight;
@@ -349,7 +352,7 @@ function animate() {
 
   renderer.clearDepth();                  // clear depth so inset draws on top
   renderer.render(scene, camera2D);
-  renderer.setClearColor(0x000000, 1);   // reset for next frame
+  renderer.setClearColor(0x000000, 0);   // reset for next frame
 }
 
 animate();
