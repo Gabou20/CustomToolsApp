@@ -33,6 +33,7 @@ const camera3D = new THREE.OrthographicCamera(
   1000
 );
 camera3D.layers.set(0);
+//camera3D.layers.enable(DIMENSION_LAYER);
 camera3D.position.set(3, 3, 3);
 
 // Renderer
@@ -328,7 +329,10 @@ function animate() {
   const insetWidth = 300;
   const insetHeight = h - 250;
   // Bottom-right
-  const insetX = w - insetWidth - 20;
+  //const insetX = w - insetWidth - 20;
+  //const insetY = (h-250)/2 - insetHeight/2;
+    // Bottom-left
+  const insetX = 20;
   const insetY = (h-250)/2 - insetHeight/2;
 
   renderer.setViewport(insetX, insetY, insetWidth, insetHeight);
