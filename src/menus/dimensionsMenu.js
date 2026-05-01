@@ -6,7 +6,7 @@ const step = 0.05;
 const minDiameter = step;
 const maxDiameter = 10.0;
 const minLenght = step;
-const maxLenght = 50.0;
+const maxLenght = 100.0;
 
 /**
  * Build the part configurator GUI.
@@ -18,27 +18,66 @@ const maxLenght = 50.0;
 export function createDimensionsMenu(params, onChange) {
   const gui = new GUI({ title: 'Part Configurator', width: 300 });
 
-  const shaftFolder = gui.addFolder('Shaft');
-  shaftFolder.add(params, 'shaftMaterial', Object.keys(shaftMaterials))
-  .name('Shaft material')
-  .onChange(onChange);
+  // Forward declarations so onChange callbacks can reference these
+  let fixtureLengthController;
+  let ballDiameterController;
 
-  shaftFolder.add(params, 'shaftDiameter', minDiameter, maxDiameter, step)
-  .name('Shaft diameter (mm)')
-  .onChange(onChange);
+  const shaftFolder = gui.addFolder('Shaft');
+
+  fixtureLengthController = shaftFolder
+    .add(params, 'fixtureLength', 3.5, maxLenght, step)
+    .name('Fixture length (mm)')
+    .onChange(onChange);
 
   shaftFolder.add(params, 'shaftLength', minLenght, maxLenght, step)
-  .name('Shaft length (mm)')
-  .onChange(onChange);
+    .name('Shaft length (mm)')
+    .onChange(() => {
+      fixtureLengthController.max(params.shaftLength);
+      if (params.fixtureLength > params.shaftLength) {
+        params.fixtureLength = params.shaftLength;
+        fixtureLengthController.updateDisplay();
+      }
+      onChange();
+    });
+
+  shaftFolder.add(params, 'shaftDiameter', minDiameter, maxDiameter, step)
+    .name('Shaft diameter (mm)')
+    .onChange(() => {
+      ballDiameterController.min(params.shaftDiameter);
+      if (params.ballDiameter < params.shaftDiameter) {
+        params.ballDiameter = params.shaftDiameter;
+        ballDiameterController.updateDisplay();
+      }
+      onChange();
+    });
+
+  shaftFolder.add(params, 'shaftMaterial', Object.keys(shaftMaterials))
+    .name('Shaft material')
+    .onChange(onChange);
 
   const ballFolder = gui.addFolder('Ball');
-  ballFolder.add(params, 'ballMaterial', Object.keys(ballMaterials))
-  .name('Ball material')
-  .onChange(onChange);
 
-  ballFolder.add(params, 'ballDiameter', minDiameter, maxDiameter, step)
-  .name('Ball diameter (mm)')
-  .onChange(onChange);
+  ballDiameterController = ballFolder
+    .add(params, 'ballDiameter', minDiameter, maxDiameter, step)
+    .name('Ball diameter (mm)')
+    .onChange(onChange);
+
+  ballFolder.add(params, 'ballMaterial', Object.keys(ballMaterials))
+    .name('Ball material')
+    .onChange(onChange);
+
+  // Apply initial constraints
+  fixtureLengthController.max(params.shaftLength);
+  if (params.fixtureLength > params.shaftLength) {
+    params.fixtureLength = params.shaftLength;
+    fixtureLengthController.updateDisplay();
+  }
+
+  ballDiameterController.min(params.shaftDiameter);
+  if (params.ballDiameter < params.shaftDiameter) {
+    params.ballDiameter = params.shaftDiameter;
+    ballDiameterController.updateDisplay();
+  }
 
   return gui;
 }
