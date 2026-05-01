@@ -110,16 +110,17 @@ function accumulateTranslationGeometry(geometry, currentOffset, offset) {
 //-------------------------------------------------------------------
 // Get the screw assembly relative to the current offset
 //
+// Parameter size          : Connector size
 // Parameter currentOffset : the current offset
 // Parameter material      : the screw material
 //
 // Return : The screw assembly
 //===================================================================
-function getScrewAssembly(currentOffset, material) {
-  const m3PinDiameter = 1.7;
-  const m3PinLength = 0.8;
-  const m3ScrewDiameter = 2;
-  const m3ScrewLength = 1.4;
+function getScrewAssembly(size, currentOffset, material) {
+  const m3PinDiameter = 1.7 * size/3;
+  const m3PinLength = 0.8 * size/3;
+  const m3ScrewDiameter = 2 * size/3;
+  const m3ScrewLength = 1.4 * size/3;
   
   let assembly = new THREE.Group();
   var offset = currentOffset
@@ -152,6 +153,7 @@ function getScrewAssembly(currentOffset, material) {
 // ─── Parameters (the source of truth) ───────────────────────────
 
 const params = {
+  connectorType: 'M3',
   fixtureDiameter: 3,
   fixtureLength: 5,
   shaftMaterial: 'Steel',
@@ -187,6 +189,16 @@ function disposeAllElementsInGroup(group)
 
 function rebuildAssembly() {
 console.log('rebuilding with params:', { ...params });
+
+  if (params.connectorType == 'M4') {
+    params.fixtureDiameter = 4;
+  }
+  else if (params.connectorType == 'M2') {
+    params.fixtureDiameter = 2;
+  }
+  else {
+    params.fixtureDiameter = 3;
+  }
 
   // Dispose old geometry/materials to avoid memory leaks
   disposeAllElementsInGroup(assembly);
@@ -230,7 +242,8 @@ console.log('rebuilding with params:', { ...params });
 
   assembly.add(completeFixture);
 
-  assembly.add(getScrewAssembly( offset, getShaftMaterial("Steel") ));
+  // Add screw
+  assembly.add(getScrewAssembly(params.fixtureDiameter, offset, getShaftMaterial("Steel") ));
 
   scene.add(assembly);
 

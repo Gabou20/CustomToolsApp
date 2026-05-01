@@ -8,6 +8,12 @@ const maxDiameter = 10.0;
 const minLenght = 5;
 const maxLenght = 100.0;
 
+const connectorType = {
+  M2: 2,
+  M3: 3,
+  M4: 4
+};
+
 /**
  * Build the part configurator GUI.
  *
@@ -17,6 +23,11 @@ const maxLenght = 100.0;
  */
 export function createDimensionsMenu(params, onChange) {
   const gui = new GUI({ title: 'Part Configurator', width: 300 });
+
+  const connectorFolder = gui.addFolder('Connector');
+  connectorFolder.add(params, 'connectorType', Object.keys(connectorType))
+  .name('Type')
+  .onChange(onChange);
 
   // Forward declarations so onChange callbacks can reference these
   let fixtureLengthController;
