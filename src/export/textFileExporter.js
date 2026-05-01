@@ -15,12 +15,15 @@ function downloadTextFile(filename, content) {
 export function exportAsTextFile(params)
 {
     const text = 
-`Shaft diameter: ${params.shaftDiameter} mm
-Shaft length: ${params.shaftLength} mm
+`Connector type: ${params.connectorType}
+Fixture length: ${params.fixtureLength} mm
 Shaft material: ${params.shaftMaterial}
+Shaft diameter: ${params.shaftDiameter} mm
+Shaft length: ${params.shaftLength} mm
+Stylus end type: ${params.endType}
+Stylus end material: ${params.ballMaterial}
 Ball diameter: ${params.ballDiameter} mm
-Ball material: ${params.ballMaterial}
-Fixture length: ${params.fixtureLength} mm`;
-
-    downloadTextFile('config.txt', text);
+Disk thickness: ${params.diskThickness} mm`
+    
+downloadTextFile('config.txt', text);
 }

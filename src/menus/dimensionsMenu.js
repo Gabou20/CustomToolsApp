@@ -41,6 +41,10 @@ export function createDimensionsMenu(params, onChange) {
 
   const shaftFolder = gui.addFolder('Shaft');
 
+    shaftFolder.add(params, 'shaftMaterial', Object.keys(shaftMaterials))
+    .name('Shaft material')
+    .onChange(onChange);
+
   fixtureLengthController = shaftFolder
     .add(params, 'fixtureLength', 3.5, maxLenght, step)
     .name('Fixture length (mm)')
@@ -68,23 +72,19 @@ export function createDimensionsMenu(params, onChange) {
       onChange();
     });
 
-  shaftFolder.add(params, 'shaftMaterial', Object.keys(shaftMaterials))
-    .name('Shaft material')
-    .onChange(onChange);
-
   const ballFolder = gui.addFolder('Stylus end');
 
-  ballFolder.add(params, 'endType', Object.keys(endType))
-  .name('Type')
-  .onChange(onChange);
+    ballFolder.add(params, 'endType', Object.keys(endType))
+    .name('Type')
+    .onChange(onChange);
+
+    ballFolder.add(params, 'ballMaterial', Object.keys(ballMaterials))
+    .name('Material')
+    .onChange(onChange);
  
   ballDiameterController = ballFolder
     .add(params, 'ballDiameter', minDiameter, maxDiameter, step)
     .name('Diameter (mm)')
-    .onChange(onChange);
-
-  ballFolder.add(params, 'ballMaterial', Object.keys(ballMaterials))
-    .name('Material')
     .onChange(onChange);
  
   ballFolder.add(params, 'diskThickness', minDiameter, maxDiameter/8, step)
