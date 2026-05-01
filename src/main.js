@@ -87,12 +87,63 @@ function frameObject(object, camera, controls, padding = 1.5) {
   controls.update();
 }
 
+//-------------------------------------------------------------------
+// Apply geometry translation and accumulate offset
+//
+// Parameter geometry      : The geometry to translate
+// Parameter currentOffset : the current offset
+// Parameter material      : the geometry offset to accumulate
+//
+// Return : The accumulated offset
+//===================================================================
 function accumulateTranslationGeometry(geometry, currentOffset, offset) {
   // Translate the geometry
   geometry.translate(0, currentOffset, 0);
 
   // Accumulate translation offset
   return currentOffset + offset;
+}
+
+//-------------------------------------------------------------------
+// Get the screw assembly relative to the current offset
+//
+// Parameter currentOffset : the current offset
+// Parameter material      : the screw material
+//
+// Return : The screw assembly
+//===================================================================
+function getScrewAssembly(currentOffset, material) {
+  const m3PinDiameter = 1.7;
+  const m3PinLength = 0.8;
+  const m3ScrewDiameter = 2;
+  const m3ScrewLength = 1.4;
+  
+  let assembly = new THREE.Group();
+  var offset = currentOffset
+
+  // Pin
+  const geometry = new THREE.CylinderGeometry(m3PinDiameter/2, m3PinDiameter/2, m3PinLength);
+  offset = accumulateTranslationGeometry( geometry, offset, m3PinLength/2);
+  assembly.add(new THREE.Mesh(geometry, material));
+
+  // Bottom screw
+  const bevelLength = m3ScrewDiameter - m3PinDiameter;
+  const bottomGeometry = new THREE.CylinderGeometry(m3ScrewDiameter/2, m3PinDiameter/2, bevelLength/2);
+  offset = accumulateTranslationGeometry( bottomGeometry, offset + bevelLength/4, bevelLength/4);
+  assembly.add(new THREE.Mesh(bottomGeometry, material));
+
+  // Screw
+  const screwLength = m3ScrewLength - 2 * bevelLength;
+  const screwGeometry = new THREE.CylinderGeometry(m3ScrewDiameter/2, m3ScrewDiameter/2, screwLength);
+  offset = accumulateTranslationGeometry( screwGeometry, offset + screwLength/2, screwLength/2);
+  assembly.add(new THREE.Mesh(screwGeometry, material));
+
+  // Top screw
+  const topGeometry = new THREE.CylinderGeometry(m3PinDiameter/2, m3ScrewDiameter/2, bevelLength/2);
+  offset = accumulateTranslationGeometry( topGeometry, offset + bevelLength/4, bevelLength/4);
+  assembly.add(new THREE.Mesh(topGeometry, material));
+
+  return assembly;
 }
 
 // ─── Parameters (the source of truth) ───────────────────────────
@@ -175,6 +226,8 @@ console.log('rebuilding with params:', { ...params });
   const completeFixture = CSG.subtract(completeFixtureAddition, hole);
 
   assembly.add(completeFixture);
+
+  assembly.add(getScrewAssembly( offset, getShaftMaterial("Steel") ));
 
   scene.add(assembly);
 
