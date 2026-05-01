@@ -156,8 +156,10 @@ const params = {
   shaftMaterial: 'Steel',
   shaftDiameter: 2,
   shaftLength: 16,
+  endType: 'Ball',
   ballMaterial: 'Ruby',
   ballDiameter: 3,
+  diskThickness: 0.5
 };
 
 // Assembly + rebuild logic
@@ -187,7 +189,10 @@ function disposeAllElementsInGroup(group)
 function rebuildAssembly() {
 console.log('rebuilding with params:', { ...params });
 
-  if (params.connectorType == 'M4') {
+  if (params.connectorType == 'M5') {
+    params.fixtureDiameter = 5;
+  }
+  else if (params.connectorType == 'M4') {
     params.fixtureDiameter = 4;
   }
   else if (params.connectorType == 'M2') {
@@ -207,7 +212,13 @@ console.log('rebuilding with params:', { ...params });
   const fixtureConeLength = params.fixtureLength - fixtureCylinderLength;
 
   // Tip
-  const geometry = new THREE.SphereGeometry(params.ballDiameter/2);
+  var geometry;
+  if ( params.endType == 'Disk' ) {
+    geometry = new THREE.CylinderGeometry(params.ballDiameter/2, params.ballDiameter/2, params.diskThickness);
+  }
+  else {
+    geometry = new THREE.SphereGeometry(params.ballDiameter/2);
+  }
   offset = accumulateTranslationGeometry( geometry, offset, params.ballDiameter/2);
   const tip = new THREE.Mesh(geometry, getBallMaterial(params.ballMaterial));
   assembly.add(tip);

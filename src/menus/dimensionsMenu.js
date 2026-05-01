@@ -11,7 +11,13 @@ const maxLenght = 100.0;
 const connectorType = {
   M2: 2,
   M3: 3,
-  M4: 4
+  M4: 4,
+  M5: 5
+};
+
+const endType = {
+  Ball: 0,
+  Disk: 1
 };
 
 /**
@@ -66,15 +72,23 @@ export function createDimensionsMenu(params, onChange) {
     .name('Shaft material')
     .onChange(onChange);
 
-  const ballFolder = gui.addFolder('Ball');
+  const ballFolder = gui.addFolder('Stylus end');
 
+  ballFolder.add(params, 'endType', Object.keys(endType))
+  .name('Type')
+  .onChange(onChange);
+ 
   ballDiameterController = ballFolder
     .add(params, 'ballDiameter', minDiameter, maxDiameter, step)
-    .name('Ball diameter (mm)')
+    .name('Diameter (mm)')
     .onChange(onChange);
 
   ballFolder.add(params, 'ballMaterial', Object.keys(ballMaterials))
-    .name('Ball material')
+    .name('Material')
+    .onChange(onChange);
+ 
+  ballFolder.add(params, 'diskThickness', minDiameter, maxDiameter/8, step)
+    .name('Disk thickness (mm)')
     .onChange(onChange);
 
   // Apply initial constraints
