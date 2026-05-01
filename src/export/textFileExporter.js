@@ -12,7 +12,7 @@ function downloadTextFile(filename, content) {
     URL.revokeObjectURL(url);
 }
 
-export function exportAsTextFile(params)
+export function exportAsText(params)
 {
     const text = 
 `Connector type: ${params.connectorType}
@@ -26,4 +26,9 @@ Ball diameter: ${params.ballDiameter} mm
 Disk thickness: ${params.diskThickness} mm`
     
 downloadTextFile('config.txt', text);
+}
+
+export function exportAsXml(params)
+{
+
 }

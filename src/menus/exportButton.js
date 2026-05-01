@@ -1,13 +1,27 @@
-import {exportAsTextFile} from '../export/textFileExporter.js';
+import {exportAsText, exportAsXml} from '../export/textFileExporter.js';
 
-export function addExportButton(gui, params)
+export function addExportMenu(gui, params)
 {
+    const exportFolder = gui.addFolder('Export');
+
+    const exportSettings = {
+        format: 'txt',
+    };
+
     const actions = {
         exportConfig: () => {
             console.log('Export!');
-            exportAsTextFile(params);
-        },
-};
+            switch (exportSettings.format) {
+                case 'txt':
+                    exportAsText(params);
+                    break;
+                case 'xml':
+                    exportAsXml(params);
+                    break;
+            };
+        }
+    };
 
-    gui.add(actions, 'exportConfig').name('Export configuration');
+    exportFolder.add(exportSettings, 'format', ['txt', 'xml']).name('Format');
+    exportFolder.add(actions, 'exportConfig').name('Export configuration');
 }

@@ -10,7 +10,7 @@ import { HDRLoader } from 'three/addons/loaders/HDRLoader.js';
 import { CSG } from 'three-csg-ts';
 import { addDimensionsToGroup, createDimension } from './technicalDrawing.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-import { addExportButton } from './menus/exportButton.js';
+import { addExportMenu } from './menus/exportButton.js';
 
 // Set up: dimensions go on layer 1, default geometry stays on layer 0
 const DIMENSION_LAYER = 1;
@@ -268,7 +268,7 @@ console.log('rebuilding with params:', { ...params });
 
 // GUI — pass it the params and tell it what to do on change
 let gui = createDimensionsMenu(params, rebuildAssembly);
-addExportButton(gui, params);
+addExportMenu(gui, params);
 
 // Orbit controls — drag to rotate, scroll to zoom, right-click to pano
 const controls = new OrbitControls(camera3D, renderer.domElement);
