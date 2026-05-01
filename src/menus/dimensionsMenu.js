@@ -5,7 +5,7 @@ import { ballMaterials, shaftMaterials } from '../textures/materials.js';
 const step = 0.05;
 const minDiameter = step;
 const maxDiameter = 10.0;
-const minLenght = step;
+const minLenght = 5;
 const maxLenght = 100.0;
 
 /**
@@ -71,12 +71,14 @@ export function createDimensionsMenu(params, onChange) {
   if (params.fixtureLength > params.shaftLength) {
     params.fixtureLength = params.shaftLength;
     fixtureLengthController.updateDisplay();
+    onChange();
   }
 
   ballDiameterController.min(params.shaftDiameter);
   if (params.ballDiameter < params.shaftDiameter) {
     params.ballDiameter = params.shaftDiameter;
     ballDiameterController.updateDisplay();
+    onChange();
   }
 
   return gui;
