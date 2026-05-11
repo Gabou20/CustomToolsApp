@@ -98,7 +98,7 @@ function createTextSprite(text, position) {
 
   const sprite = new THREE.Sprite(material);
   sprite.position.copy(position);
-  sprite.scale.set(15, 4, 1);
+  sprite.scale.set(10, 2.5, 1);
   return sprite;
 }
 
