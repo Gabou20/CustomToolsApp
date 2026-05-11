@@ -142,16 +142,16 @@ export function addDimensionsToGroup(group, shaft, fixture, tip, layer)
 
     const shaftBottom = new THREE.Vector3(shaftRightX + 2, shaftBottomY, 0);
     const shaftTop    = new THREE.Vector3(shaftRightX + 2, shaftTopY + fixtureTopY - fixtureBottomY, 0);
-    const shaftAnnotationOffset = 10 + shaftRightX - shaftLeftX;
+    const shaftAnnotationOffset = 8 + shaftRightX - shaftLeftX;
     group.add(createDimension(shaftBottom, shaftTop, shaftAnnotationOffset, `${completeShaftLength.toFixed(1)} mm`, layer));
 
     const target = new THREE.Vector3(shaftRightX, shaftTopY * 0.5, 0);
-    const offset = new THREE.Vector3(8, 0, 0);   // 8 units to the right
+    const offset = new THREE.Vector3(6, 0, 0);   // 8 units to the right
     group.add(createLeaderAnnotation(target, offset, `Ø${(shaftRightX - shaftLeftX).toFixed(1)} mm`, layer));
 
     const fixtureBottom = new THREE.Vector3(-fixtureRightX - 2, fixtureBottomY, 0);
     const fixtureTop    = new THREE.Vector3(-fixtureRightX - 2, fixtureTopY, 0);
-    const fixtureAnnotationOffset = 10 + fixtureRightX - fixtureLeftX;
+    const fixtureAnnotationOffset = 8 + fixtureRightX - fixtureLeftX;
     group.add(createDimension(fixtureBottom, fixtureTop, -fixtureAnnotationOffset, `${(fixtureTopY - fixtureBottomY).toFixed(1)} mm`, layer));
 
     const ballBox = new THREE.Box3().setFromObject(tip);
