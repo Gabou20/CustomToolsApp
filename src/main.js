@@ -329,11 +329,11 @@ function animate() {
   const insetWidth = 350;
   const insetHeight = h;
   // Bottom-right
-  //const insetX = w - insetWidth - 20;
-  //const insetY = (h-250)/2 - insetHeight/2;
+  const insetX = w - insetWidth - 20;
+  const insetY = (h-250)/2 - insetHeight/2;
     // Bottom-left
-  const insetX = 20;
-  const insetY = 0;
+  //const insetX = 20;
+  //const insetY = 0;
 
   renderer.setViewport(insetX, insetY, insetWidth, insetHeight);
   renderer.setScissor(insetX, insetY, insetWidth, insetHeight);
